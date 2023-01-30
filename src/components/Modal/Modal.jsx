@@ -25,7 +25,7 @@ export const Modal = ({ bigImg, switchModal }) => {
     return () => {
       window.removeEventListener('keydown', handleEsc);
     };
-  }, []);
+  }, [switchModal]);
 
   return createPortal(
     <>
