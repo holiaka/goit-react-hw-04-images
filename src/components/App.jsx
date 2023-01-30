@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { api } from 'services/restApi';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { Searchbar } from './Searchbar/Searchbar';
@@ -8,65 +8,64 @@ import { Button } from './Button/Button';
 import { Modal } from 'components/Modal/Modal';
 import { Div } from './CssForApp/App.styled';
 
-export class App extends Component {
-  state = {
-    query: '',
-    photoArr: [],
-    page: 1,  
-    isLoading: false,
-    btnActive: false,
-    showModal: false,
-    selectPhotoId: '',
+export const App = () => {
+  const [query, setQuery] = useState('');
+  const [photoArr, setPhotoArr] = useState([]);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [btnActive, setBtnActive] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectPhotoId, setSelectPhotoId] = useState('');
+
+  const state = { query, photoArr, page };
+
+  const addSearchQueryParam = obj => {
+    setQuery(obj.query);
+    setPhotoArr(obj.photoArr);
+    setPage(obj.page);
+    setBtnActive(obj.btnActive);
   };
 
-  addSearchQueryParam = obj => {
-    this.setState(obj);
+  const clickButton = () => {
+    setPage(prev => prev + 1);
   };
 
-  clickButton = () => {
-    this.setState(prev => ({ page: prev.page + 1 }));
-  };
-
-  switchModal = evt => {
+  const switchModal = evt => {
     const { id } = evt.target.parentNode;
-    
+
     if (!id) {
-      this.setState({
-        showModal: false,
-        selectPhotoId: '',
-      });
-    } else if (id) {    
-      this.setState({
-        showModal: true,
-        selectPhotoId: id,
-      });
+      setShowModal(false);
+      setSelectPhotoId('');
+    } else if (id) {
+      setShowModal(true);
+      setSelectPhotoId(id);
     }
   };
 
-  async componentDidUpdate(_, prevState) {
-    const preQuery = prevState.query;
-    const prePage = prevState.page;
-    const { query, page } = this.state;
+  useEffect(() => {
+    if (!query) {
+      return;
+    }
 
-    if (preQuery !== query || prePage !== page) {
-      this.setState({ isLoading: true });
+    const fetchPrepare = async () => {
+      setIsLoading(true);
       const response = await api(query, page);
       if (!response) {
-        this.setState({ isLoading: false });
+        setIsLoading(false);
         return;
       }
       const { hits, totalHits } = response;
 
       if (!totalHits) {
         Notify.failure('Unfortunately, nothing was found for your request!');
-        this.setState({ isLoading: false });
+        setIsLoading(false);
         return;
       } else if (page === 1) {
         Notify.success(
           `The search was successful! ${totalHits} photos are available for viewing!`
         );
       }
-      this.setState({ isLoading: false });
+      setIsLoading(false);
 
       const imgData = hits.map(item => {
         return {
@@ -77,38 +76,31 @@ export class App extends Component {
       });
 
       if (page < Math.ceil(totalHits / 12) || !totalHits) {
-        this.setState({ btnActive: true });
+        setBtnActive(true);
       } else {
-        this.setState({ btnActive: false });
+        setBtnActive(false);
       }
 
-      this.setState({
-        photoArr: [...this.state.photoArr, ...imgData],
-        page: page        
-      });      
-    }
-  }
+      setPhotoArr([...photoArr, ...imgData]);
+      setPage(page);
+      return;
+    };
 
-  render() {
-    return (
-      <Div>
-        <Searchbar
-          onSubmit={this.addSearchQueryParam}
-          state={this.state}
-        ></Searchbar>
-        <ImageGallery
-          state={this.state}
-          switchModal={this.switchModal}
-        ></ImageGallery>
-        {this.state.isLoading && <Loader />}
-        {this.state.btnActive && <Button onClick={this.clickButton}></Button>}
-        {this.state.showModal && this.state.photoArr[this.state.selectPhotoId] && (
-          <Modal
-            bigImg={this.state.photoArr[this.state.selectPhotoId].bigImg}           
-            switchModal={this.switchModal}
-          />
-        )}
-      </Div>
-    );
-  }
-}
+    fetchPrepare();
+  }, [query, page]);
+
+  return (
+    <Div>
+      <Searchbar onSubmitSearch={addSearchQueryParam} state={state}></Searchbar>
+      <ImageGallery state={state} switchModal={switchModal}></ImageGallery>
+      {isLoading && <Loader />}
+      {btnActive && <Button onClick={clickButton}></Button>}
+      {showModal && photoArr[selectPhotoId] && (
+        <Modal
+          bigImg={photoArr[selectPhotoId].bigImg}
+          switchModal={switchModal}
+        />
+      )}
+    </Div>
+  );
+};
