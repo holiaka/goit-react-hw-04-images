@@ -81,9 +81,9 @@ export const App = () => {
         setBtnActive(false);
       }
 
-      setPhotoArr([...photoArr, ...imgData]);
+      setPhotoArr((prev) => [...prev, ...imgData]);
       setPage(page);
-      return;
+
     };
 
     fetchPrepare();
