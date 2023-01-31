@@ -10,14 +10,14 @@ const modalRoot = document.getElementById('modal-root');
 export const Modal = ({ bigImg, switchModal }) => {
   const handleBackdrop = evt => {
     if (evt.target === evt.currentTarget) {
-      switchModal(evt);
+      switchModal('');
     }
   };
 
   useEffect(() => {
     const handleEsc = evt => {
       if (evt.code === 'Escape') {
-        switchModal(evt);
+        switchModal('');
       }
     };
     window.addEventListener('keydown', handleEsc);
@@ -30,7 +30,7 @@ export const Modal = ({ bigImg, switchModal }) => {
   return createPortal(
     <>
       <ModalOverlay onClick={handleBackdrop}>
-        <ModalButton type="button" onClick={switchModal}>
+        <ModalButton type="button" onClick={() => switchModal('')}>
           <ReactSVG2 width={50} height={50} />
         </ModalButton>
         <ImageBox>

@@ -15,7 +15,7 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [btnActive, setBtnActive] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [selectPhotoId, setSelectPhotoId] = useState('');
+  const [selectPhotoSrc, setSelectPhotoSrc] = useState('');
 
   const state = { query, photoArr, page };
 
@@ -30,15 +30,14 @@ export const App = () => {
     setPage(prev => prev + 1);
   };
 
-  const switchModal = evt => {
-    const { id } = evt.target.parentNode;
+  const switchModal = src => {    
 
-    if (!id) {
+    if (!src) {
       setShowModal(false);
-      setSelectPhotoId('');
-    } else if (id) {
+      setSelectPhotoSrc('');
+    } else if (src) {
       setShowModal(true);
-      setSelectPhotoId(id);
+      setSelectPhotoSrc(src);
     }
   };
 
@@ -95,9 +94,9 @@ export const App = () => {
       <ImageGallery state={state} switchModal={switchModal}></ImageGallery>
       {isLoading && <Loader />}
       {btnActive && <Button onClick={clickButton}></Button>}
-      {showModal && photoArr[selectPhotoId] && (
+      {showModal && selectPhotoSrc && (
         <Modal
-          bigImg={photoArr[selectPhotoId].bigImg}
+          bigImg={selectPhotoSrc}
           switchModal={switchModal}
         />
       )}

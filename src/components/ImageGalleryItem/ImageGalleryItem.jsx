@@ -4,22 +4,21 @@ import { Image, Item } from './ImageGalleryItem.styled';
 export const ImageGalleryItem = ({
   discription,
   smallImg,
-  id,
+  bigImg,
   switchModal,
 }) => {
   return (
     <>
-      <Item id={id} onClick={switchModal}>
+      <Item onClick={() => switchModal(bigImg)}>
         <Image src={smallImg} alt={discription} />
       </Item>
     </>
   );
 };
 
-ImageGalleryItem.propTypes = {
-  id: PropTypes.number.isRequired,
+ImageGalleryItem.propTypes = {  
   discription: PropTypes.string.isRequired,
   smallImg: PropTypes.string.isRequired,
   bigImg: PropTypes.string.isRequired,
-  switchModal: PropTypes.func.isRequired,
+  switchModal: PropTypes.func.isRequired  
 };

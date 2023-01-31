@@ -8,16 +8,12 @@ export const ImageGallery = ({ state, switchModal }) => {
       {state.photoArr.map(({ disc, smallImg, bigImg }, idx) => {
         return (
           <ImageGalleryItem
-            onClick={switchModal}
+            switchModal={switchModal}
             key={idx}
-            id={idx}
             discription={disc}
             smallImg={smallImg}
-            bigImg={bigImg}
-            showModal={state.showModal}
-            isLoading={state.isLoading}
-            switchModal={switchModal}
-            srcSelectPhoto={state.srcSelectPhoto}
+            bigImg={bigImg}            
+                     
           />
         );
       })}
